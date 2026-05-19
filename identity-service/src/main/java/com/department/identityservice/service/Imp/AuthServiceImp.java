@@ -20,13 +20,13 @@ import java.util.Optional;
 public class AuthServiceImp implements AuthService
 {
     @Autowired
-    private final UserServiceImp userServiceImp;
+    private UserServiceImp userServiceImp;
 
     @Autowired
-    private final PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private final JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;
 
     @Override
     public UserResponseDTO register(RegisterDTO payload) {

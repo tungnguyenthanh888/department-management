@@ -19,13 +19,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    private BCryptPasswordEncoder bCryptPasswordEncoder()
+    public BCryptPasswordEncoder bCryptPasswordEncoder()
     {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    private AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
     {
         return authenticationConfiguration.getAuthenticationManager();
     }

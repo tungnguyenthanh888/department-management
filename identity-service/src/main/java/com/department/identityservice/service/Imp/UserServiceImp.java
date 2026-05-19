@@ -17,7 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImp implements UserService {
     @Autowired
-    private final UserRepository repository;
+    private UserRepository repository;
 
     @Override
     public UserResponseDTO createUser(RegisterDTO payload) {
