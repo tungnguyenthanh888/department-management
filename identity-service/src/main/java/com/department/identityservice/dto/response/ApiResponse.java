@@ -16,12 +16,12 @@ public class ApiResponse {
     private Object data;
     private String error;
 
-    private static ApiResponse success(String message, HttpStatus status, Object data)
+    public static ApiResponse success(String message, HttpStatus status, Object data)
     {
         return new ApiResponse(message, status, data, null);
     }
 
-    private static  ApiResponse error(String message, HttpStatus status, String error)
+    public static  ApiResponse error(String message, HttpStatus status, String error)
     {
         return new ApiResponse(message, status, null, error);
     }
