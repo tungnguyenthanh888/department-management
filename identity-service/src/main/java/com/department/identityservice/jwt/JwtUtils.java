@@ -20,8 +20,8 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String SECRET;
 
-    @Value("{jwt.expiration}")
-    private Long EXPIRATION_TIME;
+    @Value("${jwt.expiration}")
+    private long EXPIRATION_TIME;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
