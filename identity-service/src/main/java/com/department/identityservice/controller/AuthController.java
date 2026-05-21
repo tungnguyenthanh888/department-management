@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/identity")
 public class AuthController {
     @Autowired
     private AuthServiceImp authServiceImp;
@@ -42,5 +42,11 @@ public class AuthController {
                 .body(
                         ApiResponse.success("Login successfully.", HttpStatus.ACCEPTED, response)
                 );
+    }
+
+    @PostMapping("/test")
+    public String demo(@RequestBody RegisterDTO payload)
+    {
+        return "Hello";
     }
 }
