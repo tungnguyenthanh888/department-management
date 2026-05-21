@@ -5,6 +5,7 @@ import com.department.identityservice.dto.request.RegisterDTO;
 import com.department.identityservice.dto.response.AuthResponseDTO;
 import com.department.identityservice.dto.response.UserResponseDTO;
 import com.department.identityservice.entity.UserEntity;
+import com.department.identityservice.exception.InvalidCredentialException;
 import com.department.identityservice.jwt.JwtUtils;
 import com.department.identityservice.service.AuthService;
 import jakarta.ws.rs.BadRequestException;
@@ -32,7 +33,7 @@ public class AuthServiceImp implements AuthService
     public UserResponseDTO register(RegisterDTO payload) {
         if(userServiceImp.isExistedUser(payload.getUsername()))
         {
-            throw new BadRequestException("Username is existed.");
+            throw new InvalidCredentialException("Username or Password is incorrect.");
         }
 
         String passwordHashed = passwordEncoder.encode(payload.getPassword());
@@ -46,6 +47,9 @@ public class AuthServiceImp implements AuthService
         Optional<String> token = userServiceImp.findByUsername(payload.getUsername())
                 .filter(user -> passwordEncoder.matches(payload.getPassword(), user.getPassword()))
                 .map(jwtUtils::generateToken);
+
+        if(token.isEmpty())
+            throw new InvalidCredentialException("Email or password is not incorrect.");
 
         return token.map(s -> AuthResponseDTO.builder()
                 .token(s)
