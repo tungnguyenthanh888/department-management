@@ -45,8 +45,14 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
-        String requestRefreshToken = request.getRefreshToken();
+        TokenRefreshResponse response = authServiceImp.refresh(request);
 
+        return ResponseEntity.status(HttpStatus.CREATED.value())
+                .body(
+                        ApiResponse.success("Access token regenerated"
+                                ,HttpStatus.CREATED
+                                ,response)
+                );
     }
 
     @GetMapping("/test")
