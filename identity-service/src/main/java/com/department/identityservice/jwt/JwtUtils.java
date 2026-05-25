@@ -3,7 +3,6 @@ package com.department.identityservice.jwt;
 import com.department.identityservice.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,15 +19,15 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String SECRET;
 
-    @Value("${jwt.expiration}")
-    private long EXPIRATION_TIME;
+    @Value("${jwt.expiration.access-token}")
+    private long ACCESS_TOKEN_EXPIRY;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
     // 1. Tạo Token
-    public String generateToken(UserEntity user) {
+    public String generateAccessToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name()); // Lưu quyền vào token
         claims.put("id", user.getId());
@@ -36,7 +35,7 @@ public class JwtUtils {
                 .claims(claims)
                 .subject(user.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRY))
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
