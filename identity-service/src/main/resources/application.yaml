@@ -19,7 +19,9 @@ server:
 
 jwt:
   secret: "9725840e7f18409e23f69888403cfcdf081e1d9a8201b714f3712cd89be7d08b"
-  expiration: 86400000
+  expiration:
+    access-token: 900000
+    refresh-token: 604800000
 
 eureka:
   client:
