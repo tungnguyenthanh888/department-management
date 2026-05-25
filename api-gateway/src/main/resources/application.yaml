@@ -1,0 +1,30 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: identity-service-route
+              uri: lb://IDENTITY-SERVICE
+              predicates:
+                - Path=/identity/**
+
+server:
+  port: 8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway
+
+jwt:
+  secret: "9725840e7f18409e23f69888403cfcdf081e1d9a8201b714f3712cd89be7d08b"
