@@ -31,7 +31,7 @@ public class JwtUtils {
     public String generateToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name()); // Lưu quyền vào token
-
+        claims.put("id", user.getId());
         return Jwts.builder()
                 .claims(claims)
                 .subject(user.getUsername())

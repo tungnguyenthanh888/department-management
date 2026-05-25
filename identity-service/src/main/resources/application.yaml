@@ -15,7 +15,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: 8080
+  port: 8081
 
 jwt:
   secret: "9725840e7f18409e23f69888403cfcdf081e1d9a8201b714f3712cd89be7d08b"
@@ -26,6 +26,6 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true

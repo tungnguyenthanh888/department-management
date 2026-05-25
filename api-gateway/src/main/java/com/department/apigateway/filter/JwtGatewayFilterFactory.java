@@ -31,7 +31,7 @@ public class JwtGatewayFilterFactory extends AbstractGatewayFilterFactory<JwtGat
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
-
+            System.out.println("Vao Filter:");
             // 1. Kiểm tra xem có chứa Header Authorization không
             if (!request.getHeaders().containsHeader(HttpHeaders.AUTHORIZATION)) {
                 return onError(exchange, "Missing Authorization Header", HttpStatus.UNAUTHORIZED);
@@ -52,7 +52,8 @@ public class JwtGatewayFilterFactory extends AbstractGatewayFilterFactory<JwtGat
 
                 // (Tùy chọn thêm) Lấy thông tin user truyền xuống các service con qua Header mới nếu cần
                 ServerHttpRequest modifiedRequest = request.mutate()
-                        .header("X-User-Subject", claims.getSubject())
+                        .header("X-User-Id", claims.getSubject())
+                        .header("X-User-Role", claims.get("role", String.class))
                         .build();
 
                 return chain.filter(exchange.mutate().request(modifiedRequest).build());
