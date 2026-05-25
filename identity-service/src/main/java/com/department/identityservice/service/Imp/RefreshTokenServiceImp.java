@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,10 +38,14 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
     }
 
     @Override
-    public RefreshToken verifyExpiration(String token) {
-        RefreshToken refreshToken = repository.findByToken(token)
-                .orElseThrow(() -> new NoSuchElementException("Not found refresh token."));
+    public Optional<RefreshToken> findRefreshToken(String token)
+    {
+        return repository.findByToken(token);
+    }
 
+    @Override
+    public RefreshToken verifyExpiration(RefreshToken refreshToken) {
+        // 3. (QUAN TRỌNG - Rotation): Xóa bản ghi Refresh Token cũ khỏi DB.
         if (refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {
             repository.delete(refreshToken); // Xoá luôn khỏi DB nếu hết hạn
             throw new ForbiddenException("Refresh token đã hết hạn. Vui lòng đăng nhập lại!");

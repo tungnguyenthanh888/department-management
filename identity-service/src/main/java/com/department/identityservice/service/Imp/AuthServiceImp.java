@@ -9,6 +9,7 @@ import com.department.identityservice.entity.RefreshToken;
 import com.department.identityservice.exception.InvalidCredentialException;
 import com.department.identityservice.jwt.JwtUtils;
 import com.department.identityservice.service.AuthService;
+import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,12 +69,20 @@ public class AuthServiceImp implements AuthService
 
     @Override
     public TokenRefreshResponse refresh(TokenRefreshRequest token) {
+        // 1. Tìm RefreshToken trong DB bằng chuỗi requestToken.
         String requestRefreshToken = token.getRefreshToken();
+        return tokenServiceImp.findRefreshToken(requestRefreshToken)
+        // 2. Nếu không tìm thấy hoặc token đã hết hạn (expiryDate < Instant.now()) -> Ném Exception.
+                .map(tokenServiceImp::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user ->{
+                    // 4. Lấy User từ token cũ, gọi JwtUtils để tạo Access Token mới.
+                    // 5. Gọi hàm createRefreshToken (đã viết ở Bài 1) để tạo Refresh Token hoàn toàn mới.
+                    String newAccessToken = jwtUtils.generateAccessToken(user);
 
-        RefreshToken refreshToken = tokenServiceImp.verifyExpiration(requestRefreshToken);
-
-        String newAccessToken = jwtUtils.generateAccessToken(refreshToken.getUser());
-
-        return null;
+                    // 6. Trả về cặp Token mới cho Client.
+                    return new TokenRefreshResponse(newAccessToken, requestRefreshToken);
+                })
+                .orElseThrow(() -> new ForbiddenException("\"Refresh Token không hợp lệ hoặc không tồn tại!\""));
     }
 }
