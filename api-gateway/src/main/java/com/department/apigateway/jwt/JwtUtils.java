@@ -8,16 +8,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtUtils {
     @Value("${jwt.secret}")
     private String SECRET;
 
-    private SecretKey getSignKey()
-    {
-        byte[] keyBytes = Decoders.BASE64URL.decode(SECRET);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private SecretKey getSignKey() {
+        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
     // Giải mã và lấy toàn bộ Payload Claims

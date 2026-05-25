@@ -16,6 +16,12 @@ spring:
               uri: lb://IDENTITY-SERVICE
               predicates:
                 - Path=/identity/**
+            - id: product-service-route
+              uri: lb://PRODUCT-SERVICE
+              predicates:
+                - Path=/api/v1/products/**
+              filters:
+                - Jwt
 
 server:
   port: 8888
