@@ -35,6 +35,7 @@ public class JwtUtils {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name()); // Lưu quyền vào token
         claims.put("id", user.getId());
+        claims.put("jti", UUID.randomUUID().toString());
         return Jwts.builder()
                 .claims(claims)
                 .subject(user.getUsername())

@@ -98,7 +98,7 @@ public class AuthServiceImp implements AuthService
     public void logout(String token) {
         // 1. Giải mã token để lấy claim "jti" và "exp" (thời gian hết hạn).
         Claims claims = jwtUtils.extractAllClaims(token);
-        String jti = claims.getId();
+        String jti = claims.get("jti", String.class);
         Date exp = claims.getExpiration();
         String username = claims.getSubject();
 
