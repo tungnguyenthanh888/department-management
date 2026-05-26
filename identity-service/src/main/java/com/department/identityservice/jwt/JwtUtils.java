@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -21,6 +22,9 @@ public class JwtUtils {
 
     @Value("${jwt.expiration.access-token}")
     private long ACCESS_TOKEN_EXPIRY;
+
+    @Value("${jwt.expiration.refresh-token}")
+    private long REFRESH_TOKEN_EXPIRY;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
@@ -51,6 +55,11 @@ public class JwtUtils {
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 
+    // 4. Lay expiry token
+    public Date extractExpiration(String token){
+        return extractClaim(token, Claims::getExpiration);
+    }
+
     private boolean isTokenExpired(String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
@@ -62,5 +71,14 @@ public class JwtUtils {
                 .parseSignedClaims(token)
                 .getPayload();
         return claimsResolver.apply(claims);
+    }
+
+    // Giải mã và lấy toàn bộ Payload Claims
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

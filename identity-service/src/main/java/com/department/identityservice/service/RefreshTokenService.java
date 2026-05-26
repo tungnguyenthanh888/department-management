@@ -9,4 +9,5 @@ public interface RefreshTokenService {
     public RefreshToken createRefreshToken(UserEntity user);
     public Optional<RefreshToken> findRefreshToken(String token);
     public RefreshToken verifyExpiration(RefreshToken refreshToken);
+    void deleteByUser(String username);
 }
