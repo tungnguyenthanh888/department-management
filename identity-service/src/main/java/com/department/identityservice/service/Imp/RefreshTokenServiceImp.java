@@ -22,6 +22,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
     private long refreshTokenExpiration;
 
     private final RefreshTokenRepository repository;
+    private final UserServiceImp userServiceImp;
 
     @Override
     @Transactional
@@ -51,5 +52,15 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
             throw new ForbiddenException("Refresh token đã hết hạn. Vui lòng đăng nhập lại!");
         }
         return refreshToken;
+    }
+
+    @Override
+    @Transactional
+    public void deleteByUser(String username) {
+        userServiceImp.findByUsername(username)
+                .ifPresentOrElse(
+                        user -> repository.deleteByUser(user), // Hành động nếu tìm thấy
+                        () -> { throw new NoSuchElementException("Not found user."); } // Hành động nếu trống rỗng
+                );
     }
 }
