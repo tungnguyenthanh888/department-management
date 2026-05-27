@@ -1,15 +1,18 @@
 package com.department.apigateway.filter;
 
+import com.department.apigateway.exception.JwtValidException;
 import com.department.apigateway.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -18,9 +21,12 @@ public class JwtGatewayFilterFactory extends AbstractGatewayFilterFactory<JwtGat
 
     private final JwtUtils jwtUtils;
 
-    public JwtGatewayFilterFactory(JwtUtils jwtUtils) {
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public JwtGatewayFilterFactory(JwtUtils jwtUtils, RedisTemplate<String, String> redisTemplate) {
         super(Config.class);
         this.jwtUtils = jwtUtils;
+        this.redisTemplate = redisTemplate;
     }
 
     public static class Config {
@@ -49,6 +55,12 @@ public class JwtGatewayFilterFactory extends AbstractGatewayFilterFactory<JwtGat
             try {
                 // 3. Sử dụng JwtParser của JJWT để giải mã và xác thực token (Chữ ký, Hết hạn...)
                 Claims claims = jwtUtils.extractAllClaims(token);
+
+                // Check token trong blacklist
+                if(redisTemplate.hasKey("blacklist:"+claims.get("jti", String.class)))
+                {
+                    return onError(exchange, "Token is in blacklist.", HttpStatus.UNAUTHORIZED);
+                }
 
                 // (Tùy chọn thêm) Lấy thông tin user truyền xuống các service con qua Header mới nếu cần
                 ServerHttpRequest modifiedRequest = request.mutate()
